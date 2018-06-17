@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.LocalDateTime;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
@@ -35,7 +36,7 @@ public class EventRegistratorTest {
     }
 
     @Test
-    public void checkEventsMustBeAddedFromDifferentThreadsInShortTime() throws InterruptedException {
+    public void checkEventsMustBeAddedFromDifferentThreadsInShortTime() throws InterruptedException, ExecutionException {
         final Executor executor = newFixedThreadPool(NUMBER_OF_THREADS);
         long time = MultipleThreadTimer.time(executor, NUMBER_OF_THREADS, () -> {
             try {
@@ -49,16 +50,16 @@ public class EventRegistratorTest {
                 LOGGER.error("Failed to add event", e);
             }
         });
-        assertThat(eventRegistrator.getNumberOfEventsInLastMinute(), equalTo(TOTAL_NUMBER_OF_EVENTS));
-        assertThat(eventRegistrator.getNumberOfEventsInLastDay(), equalTo(TOTAL_NUMBER_OF_EVENTS));
-        assertThat(eventRegistrator.getNumberOfEventsInLastHour(), equalTo(TOTAL_NUMBER_OF_EVENTS));
+        assertThat(eventRegistrator.getNumberOfEventsInLastMinute().get(), equalTo(TOTAL_NUMBER_OF_EVENTS));
+        assertThat(eventRegistrator.getNumberOfEventsInLastDay().get(), equalTo(TOTAL_NUMBER_OF_EVENTS));
+        assertThat(eventRegistrator.getNumberOfEventsInLastHour().get(), equalTo(TOTAL_NUMBER_OF_EVENTS));
         assertThat(TimeUnit.NANOSECONDS.toMillis(time), lessThan(500L));
         await().atLeast(new Duration(50, SECONDS))
                 .atMost(new Duration(70, SECONDS))
-                .until(() -> eventRegistrator.getNumberOfEventsInLastMinute(),
+                .until(() -> eventRegistrator.getNumberOfEventsInLastMinute().get(),
                         lessThan(TOTAL_NUMBER_OF_EVENTS));
         await().atMost(new Duration(130, SECONDS))
-                .until(() -> eventRegistrator.getNumberOfEventsInLastMinute() == 0);
+                .until(() -> eventRegistrator.getNumberOfEventsInLastMinute().get() == 0);
     }
 
 }
