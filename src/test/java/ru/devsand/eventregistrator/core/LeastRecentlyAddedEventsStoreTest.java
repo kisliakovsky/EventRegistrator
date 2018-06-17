@@ -5,11 +5,11 @@ import org.junit.Test;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.util.concurrent.TimeUnit;
 
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
 
 public class LeastRecentlyAddedEventsStoreTest {
 
@@ -23,7 +23,7 @@ public class LeastRecentlyAddedEventsStoreTest {
         store = new LeastRecentlyAddedEventsStore(Duration.ofSeconds(1));
         for (int i = 0; i < INITIAL_QUEUE_SIZE; i++) {
             store.add(Instant.now().toEpochMilli());
-            TimeUnit.MILLISECONDS.sleep(DEFAULT_DURATION);
+            MILLISECONDS.sleep(DEFAULT_DURATION);
         }
     }
 
@@ -34,7 +34,7 @@ public class LeastRecentlyAddedEventsStoreTest {
 
     @Test
     public void checkStoreMustBeEmptyAfterCertainTime() {
-        await().atLeast(org.awaitility.Duration.ONE_SECOND)
+        await().atLeast(new org.awaitility.Duration(900, MILLISECONDS))
                 .atMost(org.awaitility.Duration.FIVE_SECONDS)
                 .until(store::isEmpty);
     }
