@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 class BasicEventRegistrator implements EventRegistrator {
 
@@ -25,6 +26,7 @@ class BasicEventRegistrator implements EventRegistrator {
 
     @Override
     public void registerEvent(LocalDateTime eventTime) {
+        Objects.requireNonNull(eventTime);
         long eventMillis = eventTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
         stores.forEach(store -> store.add(eventMillis));
     }
