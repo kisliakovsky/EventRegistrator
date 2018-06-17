@@ -1,5 +1,11 @@
 plugins {
     id 'java'
+    id 'jacoco'
+}
+
+jacoco {
+    toolVersion = '0.8.1'
+    reportsDir = file("$buildDir/reports")
 }
 
 group 'ru.devsand'
