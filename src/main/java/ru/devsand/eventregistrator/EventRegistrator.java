@@ -1,6 +1,7 @@
 package ru.devsand.eventregistrator;
 
 import java.time.LocalDateTime;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * Basic events' statistics collector. For example, the user of this interface can monitor
@@ -23,24 +24,24 @@ public interface EventRegistrator extends AutoCloseable {
      * @param eventTime - the time when the event occurs
      * @throws NullPointerException - if eventTime is null
      */
-    void registerEvent(LocalDateTime eventTime);
+    CompletableFuture<Void> registerEvent(LocalDateTime eventTime);
 
     /**
      * Returns the number of events that occurred in the last minute.
      * @return the number of events that occurred in the last minute
      */
-    long getNumberOfEventsInLastMinute();
+    CompletableFuture<Long> getNumberOfEventsInLastMinute();
 
     /**
      * Returns the number of events that occurred in the last hour.
      * @return the number of events that occurred in the last hour
      */
-    long getNumberOfEventsInLastHour();
+    CompletableFuture<Long> getNumberOfEventsInLastHour();
 
     /**
      * Returns the number of events that occurred in last twenty four hours.
      * @return the number of events that occurred in last twenty four hours
      */
-    long getNumberOfEventsInLastDay();
+    CompletableFuture<Long> getNumberOfEventsInLastDay();
 
 }
