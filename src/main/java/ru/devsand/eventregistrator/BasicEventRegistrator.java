@@ -1,7 +1,9 @@
-package ru.devsand.eventobserver;
+package ru.devsand.eventregistrator;
 
-import ru.devsand.eventobserver.core.EventStore;
-import ru.devsand.eventobserver.core.LeastRecentlyAddedEventsStore;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import ru.devsand.eventregistrator.core.EventStore;
+import ru.devsand.eventregistrator.core.LeastRecentlyAddedEventsStore;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -12,16 +14,18 @@ import java.util.Objects;
 
 class BasicEventRegistrator implements EventRegistrator {
 
-    private EventStore secondStore;
+    private static final Logger LOGGER = LoggerFactory.getLogger(BasicEventRegistrator.class);
+
+    private EventStore minuteStore;
     private EventStore hourStore;
     private EventStore dayStore;
     private List<EventStore> stores;
 
     BasicEventRegistrator() {
-        secondStore = new LeastRecentlyAddedEventsStore(Duration.ofSeconds(1));
+        minuteStore = new LeastRecentlyAddedEventsStore(Duration.ofMinutes(1));
         hourStore = new LeastRecentlyAddedEventsStore(Duration.ofHours(1));
         dayStore = new LeastRecentlyAddedEventsStore(Duration.ofDays(1));
-        stores = Arrays.asList(secondStore, hourStore, dayStore);
+        stores = Arrays.asList(minuteStore, hourStore, dayStore);
     }
 
     @Override
@@ -29,11 +33,12 @@ class BasicEventRegistrator implements EventRegistrator {
         Objects.requireNonNull(eventTime);
         long eventMillis = eventTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
         stores.forEach(store -> store.add(eventMillis));
+        LOGGER.debug("Event added.");
     }
 
     @Override
     public long getNumberOfEventsInLastMinute() {
-        return secondStore.size();
+        return minuteStore.size();
     }
 
     @Override

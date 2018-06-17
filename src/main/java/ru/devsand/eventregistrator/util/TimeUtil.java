@@ -1,4 +1,4 @@
-package ru.devsand.eventobserver.util;
+package ru.devsand.eventregistrator.util;
 
 import java.time.temporal.ChronoUnit;
 import java.util.concurrent.TimeUnit;

@@ -1,4 +1,4 @@
-package ru.devsand.eventobserver;
+package ru.devsand.eventregistrator;
 
 import java.time.LocalDateTime;
 
